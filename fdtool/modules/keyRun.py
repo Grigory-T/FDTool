@@ -22,7 +22,7 @@ def f(U, alphaString, FD_Store):
     Column_Dict = {ascii_lowercase.upper()[i]: U[i] for i in range(len(U))}
 
     # Reformat key list
-    KeyList = [str("{" + ", ".join([Column_Dict[char] for char in KeyList[k]]) + "}") for k in range(len(KeyList))]
+    KeyList = [str("{" + ", ".join([Column_Dict[char] for char in k]) + "}") for k in KeyList]
 
     return KeyList;
 
