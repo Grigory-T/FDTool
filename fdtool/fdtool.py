@@ -46,7 +46,7 @@ def main():
             # Detect delimiter
             sniffer = csv.Sniffer()
             sniffer.preferred=[',','|',';',':','~']            
-            csvFile=open(filePath, 'rb')
+            csvFile=open(filePath, 'r')
             for row in csv.reader(csvFile,delimiter="\t"):
                 row1=row
                 break;
