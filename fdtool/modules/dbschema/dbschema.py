@@ -20,14 +20,14 @@
 import sys,re,string,math;
 from itertools import *
 
-lowercase = string.lowercase + u"ßäöüçáéíóúàèìòùãẽĩõũâêîôûëï";
-uppercase = string.uppercase + u"ÄÖÜÇÁÉÍÓÚÀÈÌÒÙÃẼĨÕŨÂÊÎÔÛËÏ"
+lowercase = string.ascii_lowercase + u"ßäöüçáéíóúàèìòùãẽĩõũâêîôûëï";
+uppercase = string.ascii_uppercase + u"ÄÖÜÇÁÉÍÓÚÀÈÌÒÙÃẼĨÕŨÂÊÎÔÛËÏ"
 letters = lowercase + uppercase;
 
 def upcSplit(s):
   attr = None; attrs = set();
   for c in s:
-    if c in uppercase: 
+    if c in uppercase:
       if attr!=None: attrs.add( attr );
       attr = c;
     else:
@@ -63,7 +63,7 @@ def ScanAbh( abhhastxt ):
     try: (li,re) = abhtx.split("->",1);
     except ValueError: raise ValueError("split by '->' did not succeed for rules: '%s' ('%s')" % (abhtx,abhhastxt) );
     li = frozenset(intdepsep.split(li)); re = set(intdepsep.split(re));
-    if upcsplit: 
+    if upcsplit:
       li = frozenset(chain(*map(upcSplit, li )));
       re = set(chain(*map(upcSplit, re )));
     if li in abhh:
@@ -75,24 +75,24 @@ def ScanAbh( abhhastxt ):
 def ScanAttrAbh( attrstxt, abhtxt ):
   return ( ScanAttr(attrstxt), ScanAbh(abhtxt) );
 
-global sort; shouldsort = True; 
+global sort; shouldsort = True;
 
 def attr2str(attrs,attrsep='' if upcsplit else ';'):
   attrs = list(attrs);
   if shouldsort: attrs.sort();
-  return string.join(attrs,attrsep);
+  return attrsep.join(attrs);
 
 def abh2str(li,re):
   attrsep = '' if upcsplit else ';'
-  li = list(li); re = list(re); 
+  li = list(li); re = list(re);
   if shouldsort: li.sort(); re.sort();
-  return string.join(li,attrsep) + '->' + string.join(re,attrsep);
+  return attrsep.join(li) + '->' + attrsep.join(re);
 
 def abhh2str(abhh,linesep='\n'):
-  lii = list(abhh.keys()); 
-  def setcmp(set1,set2): return cmp( string.join(set1,''), string.join(set2,'') )
+  lii = list(abhh.keys());
+  def setcmp(set1,set2): return cmp( ''.join(set1), ''.join(set2) )
   if shouldsort: lii.sort(setcmp);
-  result="";  
+  result="";
   for li in lii:
     result = result + abh2str(li,abhh[li])+linesep;
   if '\n' not in linesep and '\r' not in linesep:
@@ -109,10 +109,10 @@ def closure(attrs,abh):
     while haschanged:
       haschanged = False;
       for (li,re) in abh.items():
-	if li <= attrs and not re <= attrs: 
-	  attrs = attrs.union(re);
-	  haschanged = True;
-  except Exception, ex:
+        if li <= attrs and not re <= attrs:
+          attrs = attrs.union(re);
+          haschanged = True;
+  except Exception as ex:
     print("error in dependency: %s->%s" % (li,re), file=sys.stderr)
     raise ex;
   return attrs;
@@ -120,8 +120,8 @@ def closure(attrs,abh):
 
 def shuffle(lis,num):   # permutates lis according to num
   newlis=[]; positions=1;
-  while positions <= len(lis):	  
-    item = lis[len(lis)-positions]; 
+  while positions <= len(lis):
+    item = lis[len(lis)-positions];
     newlis.insert( num % positions, item );
     num = num / positions;
     positions+=1;
@@ -139,8 +139,8 @@ def mincoverage(abh,scramble=0,hints={}):
   # the keys of the dictionary are antecedents while the nodes of the value set each depict a functional dependency by listing
   # consqeuents which have the common antecedent of the dictionary key.
   # we will call all functional dependencies with common antecedent a dependency/ rule bundle
-  
-  # collect all antecedent configurations in traverse; put one variable configurations first 
+
+  # collect all antecedent configurations in traverse; put one variable configurations first
   # finally shuffle all dependency bundles according to scramble
 
   traverse = [];
@@ -158,15 +158,15 @@ def mincoverage(abh,scramble=0,hints={}):
     redabh = abh.copy(); del redabh[li];
 
     # now make a course grained test which dependencies can be left out because their right side attributes can also be derived via other rules not being part of the current rule bundle
-    # Y´ = AB \ X^+_E, E´ = E \union { X -> Y´ } => E´^+ = F^+       // X^+_E .. closure of X under the rules of E, 
+    # Y´ = AB \ X^+_E, E´ = E \union { X -> Y´ } => E´^+ = F^+       // X^+_E .. closure of X under the rules of E,
     othersclosure = closure(li,redabh);
     newre = re.difference(othersclosure).difference(li);
 
     # now try to leave out every individual dependency of the rule bundle while all other dependencies of the same rule bundle are still in place
     # if one dependency can be substituted by other dependencies then this dependency is deleted
-    #  G = E \union {  X -> Y´\D[i] },  D[i] \elementof Y´ 
-    #  D[i] \elementof X^+_G => Y´´ = Y´\D[i] (otherwise Y´´ = Y´), repeat with Y´ := Y´´; the following condition holds G^+ = F^+  
-    # do so by adding the right sides to the input argument of the following closure call instead of adding these as separate dependencies of the rule bundle: 
+    #  G = E \union {  X -> Y´\D[i] },  D[i] \elementof Y´
+    #  D[i] \elementof X^+_G => Y´´ = Y´\D[i] (otherwise Y´´ = Y´), repeat with Y´ := Y´´; the following condition holds G^+ = F^+
+    # do so by adding the right sides to the input argument of the following closure call instead of adding these as separate dependencies of the rule bundle:
     #  D[i] \elementof X^+_G <=> D[i] \elementof ( X^+_E \union Z ), Z = X \union Y´ \ D[i],  [[ Z ~ precond ]] because Z \ispartof X+_G
 
     liset = set(li); precond = liset.union(re);
@@ -174,59 +174,59 @@ def mincoverage(abh,scramble=0,hints={}):
 
     if li in hints:
       # as scramble only permutates rule bundles we have here a possibility to order dependencies listed in hints first
-      firsttouch = newre.difference(hints[li]);	  # subtract some values
-      lasttouch = newre.difference(firsttouch);	  # re-add them at the end
+      firsttouch = newre.difference(hints[li]);          # subtract some values
+      lasttouch = newre.difference(firsttouch);          # re-add them at the end
       newre_list = list(firsttouch)+list(lasttouch);
 
     for r in newre_list:
       precond.remove(r);
       if r in closure(precond,redabh):   # precond already contains the right sides of the other rules
-	newre.remove(r);                 # this is the same as closure( li, redabh + {li->each other right side} )
+        newre.remove(r);                 # this is the same as closure( li, redabh + {li->each other right side} )
       else:
-	precond.add(r);
+        precond.add(r);
 
     if len(newre) == 0:
-      abh = redabh; 
+      abh = redabh;
 
     else:
       installed_newre = False;
       if len(li) > 1:
-	# minimize the left side: see if the rest can be inferenced out of a part of the left side
-	# left side will never fall short as a whole
-	# you may believe that there is a possible flaw in the following implementation:
-	# it tries to reduce the left side for the whole rule bundle only
-	# however if the start set misses one precondition of the other rules those rules could never fire (unless this precondition got inferenced)
-	# i.e. if they can never fire the other rules of the rule bundle do not need to be considered  (however if it gets inferenced then leaving it out will already be ok)
-	lired = liset;
-	for l in li:
-	  tryred = lired.copy(); tryred.remove(l);
-	  cls = closure(tryred,redabh)
-	  if li <= cls:
-	    lired = tryred;
-	
-	# now if the left side has been successfully reduced make these changes persistent
-	if lired != li:
-	  abh = redabh; lired = frozenset(lired);  # left sides need to be unchangeable frozensets in order to serve as dictionary keys
-	  if lired in abh:
-	    # if there do already exist rules which have a left side being the same as our new reduced left side add the new rules here
-	    abh[lired] = abh[lired].union(newre);
-	  else:
-	    # otherwise add as new rule bundle
-	    abh[lired] = newre;
-	  installed_newre = True;
+        # minimize the left side: see if the rest can be inferenced out of a part of the left side
+        # left side will never fall short as a whole
+        # you may believe that there is a possible flaw in the following implementation:
+        # it tries to reduce the left side for the whole rule bundle only
+        # however if the start set misses one precondition of the other rules those rules could never fire (unless this precondition got inferenced)
+        # i.e. if they can never fire the other rules of the rule bundle do not need to be considered  (however if it gets inferenced then leaving it out will already be ok)
+        lired = liset;
+        for l in li:
+          tryred = lired.copy(); tryred.remove(l);
+          cls = closure(tryred,redabh)
+          if li <= cls:
+            lired = tryred;
+
+        # now if the left side has been successfully reduced make these changes persistent
+        if lired != li:
+          abh = redabh; lired = frozenset(lired);  # left sides need to be unchangeable frozensets in order to serve as dictionary keys
+          if lired in abh:
+            # if there do already exist rules which have a left side being the same as our new reduced left side add the new rules here
+            abh[lired] = abh[lired].union(newre);
+          else:
+            # otherwise add as new rule bundle
+            abh[lired] = newre;
+          installed_newre = True;
 
       if not installed_newre:
-	# install the reduced right side if the left side has stayed the same
-	abh = redabh;
-	abh[li] = newre;
+        # install the reduced right side if the left side has stayed the same
+        abh = redabh;
+        abh[li] = newre;
 
   return abh;
 
 def keyBaseSets(attr,abh):
-  # group attributes in 4 different base setes: 
-  #  0.) attributes that do not occur in rules 
-  #  1.) attributes found on the left side only 
-  #  2.) attrs found on the right side only 
+  # group attributes in 4 different base setes:
+  #  0.) attributes that do not occur in rules
+  #  1.) attributes found on the left side only
+  #  2.) attrs found on the right side only
   #  3.) attributes found on both sides of a rule
   attrch = dict( [ (a,0) for a in attr ] )
   for (li,re) in abh.items():
@@ -254,12 +254,12 @@ def keysTreeAlg( attr, abh, verbty=None ):
 
   if closure(subkey,abh) == attr:  # if the minimum subkey is already a key return it
     finalkey = subkey;
-    return (finalkey,{finalkey}); 
+    return (finalkey,{finalkey});
 
   keys = set(); curlvl = dict(); primattr = set(); lvl=1; lpad='';
   for m in mi:  # search for keys by adding one attribute of the middle set (attrs of the middle can derive new attributes but are not yet part of subkey)
-    csk = subkey.union(frozenset(m));  
-    if closure(csk,abh) == attr: 
+    csk = subkey.union(frozenset(m));
+    if closure(csk,abh) == attr:
       for p in csk: primattr.add(p);
       keys.add( csk );
     else: # if adding one attribute to the set does not produce a key remember this attribute set
@@ -274,24 +274,24 @@ def keysTreeAlg( attr, abh, verbty=None ):
       # pick one of the not yet selected attributes that is listed alphabetically after the alphabetically highest attribute that already is part of the set
       # this ensures that the same attribute configuration is only considered once in ascending order of the individual attributes
       missingattr = set();
-      for a in mi: 
-	if a > maxm and a not in subkey: missingattr.add(a);
+      for a in mi:
+        if a > maxm and a not in subkey: missingattr.add(a);
 
       for m in missingattr:
-	newattr = subkey.union(frozenset(m));   # do pick the attribute
-	ispartofkey = False;
-	for key in keys:
-	  if key <= newattr:
-	    ispartofkey = True;
-	    break;
-	if not ispartofkey:
-	  if closure(newattr,abh) == attr:
-	    keys.add(newattr);
-	    for p in newattr: primattr.add(p);
-	  else: # if neither a new key was found nor has the new attribute configuration been a superset of an existing key 
-	        # then remember this configuration and add one more attribute in the next step
-	    curlvl[newattr] = max(maxm,m);
-	
+        newattr = subkey.union(frozenset(m));   # do pick the attribute
+        ispartofkey = False;
+        for key in keys:
+          if key <= newattr:
+            ispartofkey = True;
+            break;
+        if not ispartofkey:
+          if closure(newattr,abh) == attr:
+            keys.add(newattr);
+            for p in newattr: primattr.add(p);
+          else: # if neither a new key was found nor has the new attribute configuration been a superset of an existing key
+                # then remember this configuration and add one more attribute in the next step
+            curlvl[newattr] = max(maxm,m);
+
   return (primattr,keys);
 
 
