@@ -13,7 +13,8 @@ p.join(MAX_TIME)
 # If thread is active
 if p.is_alive():
     # Print exceeded time limit
-    print "\n", "Exceeded preset time limit."; sys.stdout.flush()
+    print("\nExceeded preset time limit.")
+    sys.stdout.flush()
     # Terminate main
     p.terminate()
     # Cleanup

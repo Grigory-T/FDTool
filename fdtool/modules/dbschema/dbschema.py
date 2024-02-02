@@ -113,7 +113,7 @@ def closure(attrs,abh):
 	  attrs = attrs.union(re);
 	  haschanged = True;
   except Exception, ex:
-    print >>sys.stderr, "error in dependency: %s->%s" % (li,re)
+    print("error in dependency: %s->%s" % (li,re), file=sys.stderr)
     raise ex;
   return attrs;
 
