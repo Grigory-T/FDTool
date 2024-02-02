@@ -27,6 +27,7 @@ import sys, time, argparse, ntpath, pickle, csv
 from .modules import *
 from string import ascii_lowercase
 from .config import MAX_K_LEVEL
+from pandas.io.parser import CParserError
 
 def main():
 
@@ -61,7 +62,7 @@ def main():
 
             # Read in pandas data frame from csv file
             df = pd.read_csv(filePath, sep = sepType);
-        except pd.parser.CParserError:
+        except CParserError:
             print("Invalid file")
             sys.stdout.flush()
             return;
