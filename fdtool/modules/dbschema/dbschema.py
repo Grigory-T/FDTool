@@ -123,7 +123,7 @@ def shuffle(lis,num):   # permutates lis according to num
   while positions <= len(lis):
     item = lis[len(lis)-positions];
     newlis.insert( num % positions, item );
-    num = num / positions;
+    num = num // positions;
     positions+=1;
   return newlis;
 
