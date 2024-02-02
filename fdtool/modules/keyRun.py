@@ -1,4 +1,4 @@
-from dbschema import dbschema
+from .dbschema import dbschema
 from string import ascii_lowercase
 # This function
 # takes in well-formatted FDs

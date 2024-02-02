@@ -24,7 +24,7 @@
 #   }
 # return (C_k);
 
-import binaryRepr, Apriori_Gen
+from . import binaryRepr, Apriori_Gen
 
 def f(C_k, E, Closure, df, U):
 

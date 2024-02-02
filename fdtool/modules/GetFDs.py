@@ -1,4 +1,4 @@
-import binaryRepr
+from . import binaryRepr
 
 # Create decorator function to see how many times functions are called
 def call_counter(func):

@@ -24,9 +24,9 @@ __version__="0.1.7"
 
 import pandas as pd
 import sys, time, argparse, ntpath, pickle, csv
-from modules import *
+from .modules import *
 from string import ascii_lowercase
-from config import MAX_K_LEVEL
+from .config import MAX_K_LEVEL
 
 def main():
 
