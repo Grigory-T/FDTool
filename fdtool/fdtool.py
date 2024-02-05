@@ -189,7 +189,7 @@ def main():
     
     # Create string to give user info of script
     checkInfoString = str("\n" + "Time (s): " + str(round(time.time() - start_time, 4)) + "\n"
-            + "Row count: " + str(df.count()[0]) + "\n" + "Attribute count: " + str(len(U)) + "\n"
+            + "Row count: " + str(df.count().iloc[0]) + "\n" + "Attribute count: " + str(len(U)) + "\n"
             + "Number of Equivalences: " + str(Counter[0]) + "\n" + "Number of FDs: " + str(Counter[1]) + "\n"
             "Number of FDs checked: " + str(GetFDs.CardOfPartition.calls))
     
