@@ -24,9 +24,9 @@ __version__="0.1.7"
 
 import pandas as pd
 import sys, time, argparse, ntpath, pickle, csv
-from modules import *
+from .modules import *
 from string import ascii_lowercase
-from config import MAX_K_LEVEL
+from .config import MAX_K_LEVEL
 
 def main():
 
@@ -34,7 +34,8 @@ def main():
     filePath = sys.argv[1]
 
     # Print reading file
-    print "\n" + "Reading file: \n" + str(filePath) + "\n"; sys.stdout.flush();
+    print("\n" + "Reading file: \n" + str(filePath) + "\n")
+    sys.stdout.flush()
     # Define file extension from path
     fileExtension = ntpath.basename(filePath).split('.')[-1]
 
@@ -45,7 +46,7 @@ def main():
             # Detect delimiter
             sniffer = csv.Sniffer()
             sniffer.preferred=[',','|',';',':','~']            
-            csvFile=open(filePath, 'rb')
+            csvFile=open(filePath, 'r')
             for row in csv.reader(csvFile,delimiter="\t"):
                 row1=row
                 break;
@@ -54,18 +55,18 @@ def main():
             sepType = dialect.delimiter
 
             if sepType not in {",", "|", ";", ":", "~"}:
-                print "Invalid delimiter"
+                print("Invalid delimiter")
                 sys.stdout.flush()
                 return;
 
             # Read in pandas data frame from csv file
             df = pd.read_csv(filePath, sep = sepType);
-        except pd.parser.CParserError:
-            print "Invalid file"
-            sys.stdout.flush()
-            return;
+        # except pd.parser.CParserError:
+        #     print("Invalid file")
+        #     sys.stdout.flush()
+        #     return;
         except IOError:
-            print "File not found"
+            print("File not found")
             sys.stdout.flush()
             return;
     else:
@@ -73,7 +74,7 @@ def main():
             # Read in pandas data fram pkl file
             df = pd.read_pickle(filePath);
         except IOError:
-            print "File not found"
+            print("File not found")
             sys.stdout.flush()
             return;
 
@@ -89,7 +90,8 @@ def main():
         + str(", ".join(list(df.head(0)))) + "\n\n" + "Functional Dependencies: \n"))
 
     # Print line
-    print("Functional Dependencies: "); sys.stdout.flush();
+    print("Functional Dependencies: ")
+    sys.stdout.flush()
     # Define header; Initialize k; 
     U = list(df.head(0)); k = 0;
     
@@ -97,7 +99,7 @@ def main():
         # Create dictionary to convert column names into alphabetical characters
         Alpha_Dict = {U[i]: ascii_lowercase.upper()[i] for i in range(len(U))}
     except IndexError:
-        print "Table exceeds max column count"
+        print("Table exceeds max column count")
         sys.stdout.flush()
         return;
     
@@ -145,7 +147,8 @@ def main():
             # Create string for functional dependency
             String = "{" + ", ".join(FunctionalDependency[0]) + "} -> {" + str(FunctionalDependency[1]) + "}"
             # Print FD String
-            print(String); sys.stdout.flush();
+            print(String)
+            sys.stdout.flush()
             # Write string to TXT file
             file.write(String + "\n")
         
@@ -156,19 +159,22 @@ def main():
 
     # Print equivalences
     file.write("\n" + "Equivalences: " + "\n")
-    print "\n" + "Equivalences: "; sys.stdout.flush();
+    print("\n" + "Equivalences: ")
+    sys.stdout.flush()
     # Iterate through equivalences returned
     for Equivalence in E_Set:
         # Create string for functional dependency
         String = "{" + ", ".join(Equivalence[0]) + "} <-> {" + ", ".join(Equivalence[1]) + "}"
         # Print equivalence string
-        print(String); sys.stdout.flush();
+        print(String)
+        sys.stdout.flush()
         # Write string to TXT file
         file.write(String + "\n")
 
     # Print out keys 
     file.write("\n" + "Keys: " + "\n")
-    print "\n" + "Keys: "; sys.stdout.flush();
+    print("\n" + "Keys: ")
+    sys.stdout.flush()
     # Get string of column names sorted to alphabetical characters
     SortedAlphaString = "".join(sorted([Alpha_Dict[item] for item in Alpha_Dict]))
     # Run required inputs through keyList module to determine keys with
@@ -178,18 +184,20 @@ def main():
         # Write keys to file
         file.write(str(key) + "\n")
         # Print keys
-        print str(key); sys.stdout.flush();
+        print(str(key))
+        sys.stdout.flush()
     
     # Create string to give user info of script
     checkInfoString = str("\n" + "Time (s): " + str(round(time.time() - start_time, 4)) + "\n"
-            + "Row count: " + str(df.count()[0]) + "\n" + "Attribute count: " + str(len(U)) + "\n"
+            + "Row count: " + str(df.count().iloc[0]) + "\n" + "Attribute count: " + str(len(U)) + "\n"
             + "Number of Equivalences: " + str(Counter[0]) + "\n" + "Number of FDs: " + str(Counter[1]) + "\n"
             "Number of FDs checked: " + str(GetFDs.CardOfPartition.calls))
     
     # Write info at bottom
     file.write(checkInfoString)
     #Print elapsed time
-    print(checkInfoString); sys.stdout.flush();
+    print(checkInfoString)
+    sys.stdout.flush()
     # Close file
     file.close()
 

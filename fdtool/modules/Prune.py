@@ -24,7 +24,7 @@
 #   }
 # return (C_k);
 
-import binaryRepr, Apriori_Gen
+from . import binaryRepr, Apriori_Gen
 
 def f(C_k, E, Closure, df, U):
 
@@ -51,7 +51,7 @@ def f(C_k, E, Closure, df, U):
                     if len(X) == 1: 
                         try:
                              # Drop column if in the relation
-                             df = df.drop(X, 1)
+                             df = df.drop(X, axis=1)
                         except (KeyError, ValueError, TypeError) as e:
                             # Pass if attribute does not appear in the relation
                             pass;

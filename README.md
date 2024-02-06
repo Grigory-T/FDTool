@@ -6,7 +6,7 @@ candidate keys from datasets read in from .csv, .txt, and .pkl files.
 
 ##### Dependencies:
 
-  1. [Python2](https://www.python.org/) (version 2.7.8 or later recommended)
+  1. [Python2](https://www.python.org/) (version 3.8.5 or later recommended)
 
   2. [Pandas](https://pandas.pydata.org/); pip install pandas
 

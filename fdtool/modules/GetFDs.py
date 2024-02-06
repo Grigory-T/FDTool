@@ -1,4 +1,4 @@
-import binaryRepr
+from . import binaryRepr
 
 # Create decorator function to see how many times functions are called
 def call_counter(func):
@@ -21,7 +21,7 @@ def CardOfPartition(Candidate, df):
     # If length is one, find number of unique elements in column
     if len(Candidate) == 1: return df[Candidate[0]].nunique()
     # If length is +1, create groups over which to find number of unique elements
-    else: return df.drop_duplicates(Candidate).count()[0];
+    else: return df.drop_duplicates(Candidate).count().iloc[0];
 
 # Obtain FDs(C_km1) - checks the FDs of each
 #                     candidate X in C_k
