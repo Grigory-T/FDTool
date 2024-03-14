@@ -29,6 +29,8 @@ from string import ascii_lowercase
 from .config import MAX_K_LEVEL
 
 def main():
+    global globalTimer
+    global globalCount
 
     # Define filePath
     filePath = sys.argv[1]
@@ -49,7 +51,7 @@ def main():
             csvFile=open(filePath, 'r')
             for row in csv.reader(csvFile,delimiter="\t"):
                 row1=row
-                break;
+                break
             csvFile.close()
             dialect=sniffer.sniff(str(row1))
             sepType = dialect.delimiter
@@ -57,26 +59,26 @@ def main():
             if sepType not in {",", "|", ";", ":", "~"}:
                 print("Invalid delimiter")
                 sys.stdout.flush()
-                return;
+                return
 
             # Read in pandas data frame from csv file
-            df = pd.read_csv(filePath, sep = sepType);
+            df = pd.read_csv(filePath, sep = sepType)
         # except pd.parser.CParserError:
         #     print("Invalid file")
         #     sys.stdout.flush()
-        #     return;
+        #     return
         except IOError:
             print("File not found")
             sys.stdout.flush()
-            return;
+            return
     else:
         try:
             # Read in pandas data fram pkl file
-            df = pd.read_pickle(filePath);
+            df = pd.read_pickle(filePath)
         except IOError:
             print("File not found")
             sys.stdout.flush()
-            return;
+            return
 
     # Define start time
     start_time = time.time()
@@ -93,7 +95,8 @@ def main():
     print("Functional Dependencies: ")
     sys.stdout.flush()
     # Define header; Initialize k; 
-    U = list(df.head(0)); k = 0;
+    U = list(df.head(0))
+    k = 0
     
     try:
         # Create dictionary to convert column names into alphabetical characters
@@ -101,7 +104,7 @@ def main():
     except IndexError:
         print("Table exceeds max column count")
         sys.stdout.flush()
-        return;
+        return
     
     # Initialize lattice with singleton sets at 1-level
     C = [[[item] for item in U]] + [None for level in range(len(U) - 1)]
@@ -112,22 +115,28 @@ def main():
     # Initialize Cardinality as Python dict
     Cardinality = {element : None for element in Closure}
     # Create counter for number of Equivalences and FDs; initialize list to store FDs; list to store equivalences;
-    Counter=[0,0]; FD_Store = []; E_Set = [];
+    Counter=[0,0]
+    FD_Store = []
+    E_Set = []
 
     while True:
         
         # Increment k; initialize C_km1
-        k += 1; C_km1 = C[k-1];
+        k += 1
+        C_km1 = C[k-1]
         # Initialize Closure at next next k-level; update dict accordinaly
-        Closure_k = {binaryRepr.toBin(Subset, U) : set(Subset) for Subset in next(Subset_Gen)}; Closure.update(Closure_k);
+        Closure_k = {binaryRepr.toBin(Subset, U) : set(Subset) for Subset in next(Subset_Gen)}
+        Closure.update(Closure_k)
         # Update Cardinality dict with next k-level
         Cardinality.update({element: None for element in Closure_k})
 
         if k > 1:
             # Dereference Closure and Cardinality at (k-2)-level
-            for Subset in C[k-2]: del Closure[binaryRepr.toBin(Subset, U)], Cardinality[binaryRepr.toBin(Subset, U)];
+            for Subset in C[k-2]:
+              binRepr = binaryRepr.toBin(Subset, U)
+              del Closure[binRepr], Cardinality[binRepr]
             # Dereference (k-2)-level
-            C[k-2] = None;
+            C[k-2] = None
 
         # Run Apriori_Gen to get k-level Candidate row from (k-1)-level Candidate row
         C_k = Apriori_Gen.oneUp(C_km1)
@@ -136,14 +145,17 @@ def main():
         # Run Obtain Equivalences to get set of attribute equivalences
         E = ObtainEquivalences.f(C_km1, F, Closure, U)
         # Run Prune to reduce next k-level iterateion and delete equivalences; initialize C_k
-        C_k, Closure, df = Prune.f(C_k, E, Closure, df, U); C[k] = C_k;
+        C_k, Closure, df = Prune.f(C_k, E, Closure, df, U)
+        C[k] = C_k
         #Increment counter for the number of Equivalences/FDs added at this level
-        Counter[0] += len(E); Counter[1] += len(F); E_Set += E
+        Counter[0] += len(E)
+        Counter[1] += len(F)
+        E_Set += E
         
         # Print out FDs
         for FunctionalDependency in F:
             # Store well-formatted FDs in empty list
-            FD_Store.append(["".join(sorted([Alpha_Dict[i] for i in FunctionalDependency[0]])), Alpha_Dict[FunctionalDependency[1]]]);
+            FD_Store.append(["".join(sorted([Alpha_Dict[i] for i in FunctionalDependency[0]])), Alpha_Dict[FunctionalDependency[1]]])
             # Create string for functional dependency
             String = "{" + ", ".join(FunctionalDependency[0]) + "} -> {" + str(FunctionalDependency[1]) + "}"
             # Print FD String
@@ -153,9 +165,11 @@ def main():
             file.write(String + "\n")
         
         # Break while loop if cardinality of C_k is 0
-        if not len(C_k) > 0: break;
+        if not len(C_k) > 0:
+          break
         # Break while loop if k-level reaches level set in config
-        if k is not None and MAX_K_LEVEL ==k: break;
+        if k is not None and MAX_K_LEVEL == k:
+          break
 
     # Print equivalences
     file.write("\n" + "Equivalences: " + "\n")
@@ -178,7 +192,7 @@ def main():
     # Get string of column names sorted to alphabetical characters
     SortedAlphaString = "".join(sorted([Alpha_Dict[item] for item in Alpha_Dict]))
     # Run required inputs through keyList module to determine keys with
-    keyList = keyRun.f(U, SortedAlphaString, FD_Store);
+    keyList = keyRun.f(U, SortedAlphaString, FD_Store)
     # Iterate through keys returned
     for key in keyList:
         # Write keys to file
@@ -201,4 +215,5 @@ def main():
     # Close file
     file.close()
 
+    GetFDs.showStats()
 
