@@ -57,7 +57,28 @@ def showStats():
     print(f"counts: {globalCount}")
 
 def action(x):
-    CardOfPartition(x[0], x[1])
+    return CardOfPartition(x[0], x[1])
+
+
+def processCandidate(Cardanality, U, U_c, Closure):
+    def fn(Candidate):
+        F = []
+        C = []
+        candidateBinRepr = binaryRepr.toBin(Candidate, U)
+        # Iterate though attribute subsets that are not in U - X{+}; difference b/t U and inclusive closure of candidate    
+        for v_i in list(set(U_c).difference(Closure[candidateBinRepr])):
+            # Check if the cardinality of the partition of {Candidate} is equal to that of {Candidate, v_i}
+            if Cardinality[candidateBinRepr] == Cardinality[binaryRepr.toBin(Candidate + [v_i], U)]:
+                # Add attribute v_i to closure
+                C.add(v_i)
+                # Add list (Candidate, v_i) to F
+                F.append([tuple(Candidate), v_i])
+
+        return (candidateBinRepr, F, C)
+
+    return fn
+         
+
 
 def f(C_km1, df, Closure, U, Cardinality):
     global globalTimer
@@ -79,12 +100,25 @@ def f(C_km1, df, Closure, U, Cardinality):
     
     s = time.time()
     with Pool() as pool:
+        cards = pool.map(action, zip(SubsetsToCheck, [df] * len(SubsetsToCheck)))
 
         # Iterate through subsets mapped to the Cardinality of Partition function
-        for Cand, Card in zip(SubsetsToCheck, pool.map(action, zip(SubsetsToCheck, [df] * len(SubsetsToCheck)))):
+        for Cand, Card in zip(SubsetsToCheck, cards):
             # Add Cardinality of Partition to dictionary
             Cardinality[binaryRepr.toBin(Cand, U)] = Card
-    globalTimer = time.time() - s
+    globalTimer += time.time() - s
+
+
+    # with Pool() as pool:
+    #   
+    #   xs = pool.map(processCandidate(Cardinality, U, U_c, Closure), C_km1)
+    #   for x in xs:
+    #     (candidateBinRepr, F_candidate, C) = xs
+    #     if C != []:
+    #       Closure[candidateBinRepr].extend(C)
+    #     if F_candidate != []:
+    #       F.extend(F_candidate)
+
 
     # Iterate through candidates of C_km1
     for Candidate in C_km1:
