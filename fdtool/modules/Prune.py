@@ -26,50 +26,60 @@
 
 from . import binaryRepr, Apriori_Gen
 
+
 def f(C_k, E, Closure, df, U):
 
     # Define empty list to store sets to remove from C_k
     SetsToRemove = []
-    
+
     # Iterate through k-level candidates
     for S in C_k:
 
         # Iterate through all candidates at k-1-level, pruned and unpruned
-        for X in [x for x in Apriori_Gen.oneDown(C_k) if len(Closure[binaryRepr.toBin(x,U)]) > 1]:
-            
+        for X in [
+            x
+            for x in Apriori_Gen.oneDown(C_k)
+            if len(Closure[binaryRepr.toBin(x, U)]) > 1
+        ]:
+
             # Check if X is subset of S
             if set(X).issubset(set(S)):
 
                 # Put exclusive closure of X in union with inclusive closure of S; S^{+} = S^{+} U X^{*}
-                Closure[binaryRepr.toBin(S, U)] = Closure[binaryRepr.toBin(S,U)].union(Closure[binaryRepr.toBin(X, U)].difference(set(X)))
-                
+                Closure[binaryRepr.toBin(S, U)] = Closure[binaryRepr.toBin(S, U)].union(
+                    Closure[binaryRepr.toBin(X, U)].difference(set(X))
+                )
+
                 # Check if X is a consequent in any of the equivalences in E
                 if any(set(X) == set(E[EQ][1]) for EQ in range(len(E))):
                     # Remove S from C_k
                     SetsToRemove.append(S)
-                    
-                    if len(X) == 1: 
+
+                    if len(X) == 1:
                         try:
-                             # Drop column if in the relation
-                             df = df.drop(X, axis=1)
-                        except (KeyError, ValueError, TypeError) as e:
+                            # Drop column if in the relation
+                            df = df.drop(X)
+                        except (KeyError, ValueError, TypeError, Exception) as e:
                             # Pass if attribute does not appear in the relation
-                            pass;
-                    
-                    continue;
-                
+                            pass
+
+                    continue
+
                 # Check if S is contained in X^{+}
                 if set(S).issubset(Closure[binaryRepr.toBin(X, U)]):
                     # Remove S from C_k
                     SetsToRemove.append(S)
-                    continue;                
-                
+                    continue
+
                 # Check if S^{+} is equal to U
                 if set(U) == Closure[binaryRepr.toBin(S, U)]:
                     # Remove S from C_k
                     SetsToRemove.append(S)
-                    continue;
+                    continue
 
     # Return sets in C_k that are not to be removed
-    return [Candidate for Candidate in C_k if Candidate not in SetsToRemove], Closure, df;
-
+    return (
+        [Candidate for Candidate in C_k if Candidate not in SetsToRemove],
+        Closure,
+        df,
+    )

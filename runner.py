@@ -1,8 +1,17 @@
 from multiprocessing import Process, Queue
 from .fdtool.fdtool import main
+import polars as pl
 
 
-def run_fdtool(df, max_time=5, max_k_level=10):
+def run_fdtool(df, max_time=30, max_k_level=15):
+    df = df.rename(lambda el: str(el), axis=1)
+    if any(True for c in df.columns if c == ""):
+        raise Exception("empty string in columns NOT allowed")
+    if len(df.columns) != len(set(df.columns)):
+        raise Exception("columns NOT unique")
+    df = df.drop_duplicates().apply(lambda ser: ser.factorize()[0])
+    df = pl.from_pandas(df)
+
     result_queue = Queue()
     process = Process(target=main, args=(result_queue, df, max_k_level))
     process.start()

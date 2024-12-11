@@ -32,10 +32,15 @@ def main(result_queue=None, df=None, max_k_level=None):
     global globalTimer
     global globalCount
 
+    ### DEBUG
+    # import polars as pl
+    # df = pd.read_csv(r"C:\Users\trofi\dev\FDTool\data\input\Table1.csv")
+    # df = pl.from_pandas(df)
+
     rv = "Functional Dependencies: "  # stirng for accumulating all results
 
     # Define header; Initialize k;
-    U = list(df.head(0))
+    U = list(df.columns)
     k = 0
 
     try:
@@ -155,3 +160,7 @@ def main(result_queue=None, df=None, max_k_level=None):
     rv += "\nNumber of FDs checked: " + str(GetFDs.CardOfPartition.calls)
 
     result_queue.put(rv)
+
+
+### DEBUG
+# main()
