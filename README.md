@@ -7,11 +7,10 @@ my changes are clear from my commits
 how to use:
 ```python
 # in cli
-!git clone https://github.com/Grigory-T/FDTool.git
+!pip install fdtooldf
 
 # in jupyter notebook
-import sys; sys.path.insert(0, r'cloned_repo_folder_here')
-from FDTool.runner import run_fdtool
+from fdtooldf.runner import run_fdtool
 import seaborn as sns
 
 df = sns.load_dataset("tips")  # just to demonstrate
