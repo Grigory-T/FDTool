@@ -17,54 +17,52 @@ from fdtooldf.runner import run_fdtool
 import seaborn as sns
 
 df = sns.load_dataset("tips")  # just to demonstrate
-result = run_fdtool(df)  # result have two elements - [str, real_containers]
+result = run_fdtool(df)  # result have two elements - [str to print, real_containers]
 
-### print(result[0]) ###
-# Functional Dependencies: 
-# {size, total_bill} -> {time}
-# {day, total_bill} -> {size}
-# {day, total_bill} -> {time}
-# {total_bill, tip} -> {size}
-# {total_bill, tip} -> {sex}
-# {total_bill, tip} -> {time}
-# {day, total_bill, tip} -> {smoker}
-# {size, total_bill, smoker} -> {day}
-# {total_bill, tip, smoker} -> {day}
-# {day, total_bill, sex, smoker} -> {tip}
+print(result[0])
+# >>> FD (functional dependancies):
+# total_bill tip -> sex
+# total_bill day -> size
+# total_bill day -> time
+# total_bill tip -> size
+# total_bill tip -> time
+# total_bill size -> time
+# total_bill tip day -> smoker
+# total_bill tip smoker -> day
+# total_bill smoker size -> day
+# total_bill sex smoker day -> tip
 
-# Equivalences: 
-# {day, total_bill, tip} <-> {total_bill, tip, smoker}
-# {day, total_bill, smoker} <-> {size, total_bill, smoker}
+# >>> EQ (equivalences):
+# size smoker total_bill <-> smoker total_bill day
+# tip total_bill day <-> tip smoker total_bill
 
-# Keys: 
-# {total_bill, sex, smoker, size}
-# {total_bill, sex, smoker, day}
-# {total_bill, tip, smoker}
-# {total_bill, tip, day}
-
-# Number of FDs checked: 127
+# >>> CK (candidate keys):
+# day tip total_bill
+# smoker tip total_bill
+# day sex smoker total_bill
+# sex size smoker total_bill
 
 
 
-### result[1] ###
-# {'FD': frozenset({(frozenset({'tip', 'total_bill'}), 'size'),
-#             (frozenset({'day', 'tip', 'total_bill'}), 'smoker'),
-#             (frozenset({'smoker', 'tip', 'total_bill'}), 'day'),
-#             (frozenset({'day', 'total_bill'}), 'size'),
+result[1]
+# {'FD': frozenset({(frozenset({'day', 'total_bill'}), 'size'),
+#             (frozenset({'tip', 'total_bill'}), 'size'),
+#             (frozenset({'size', 'total_bill'}), 'time'),
 #             (frozenset({'tip', 'total_bill'}), 'sex'),
 #             (frozenset({'tip', 'total_bill'}), 'time'),
+#             (frozenset({'smoker', 'tip', 'total_bill'}), 'day'),
 #             (frozenset({'day', 'total_bill'}), 'time'),
-#             (frozenset({'size', 'total_bill'}), 'time'),
+#             (frozenset({'size', 'smoker', 'total_bill'}), 'day'),
 #             (frozenset({'day', 'sex', 'smoker', 'total_bill'}), 'tip'),
-#             (frozenset({'size', 'smoker', 'total_bill'}), 'day')}),
-#  'EQ': frozenset({frozenset({frozenset({'day', 'tip', 'total_bill'}),
-#                        frozenset({'smoker', 'tip', 'total_bill'})}),
-#             frozenset({frozenset({'size', 'smoker', 'total_bill'}),
-#                        frozenset({'day', 'smoker', 'total_bill'})})}),
+#             (frozenset({'day', 'tip', 'total_bill'}), 'smoker')}),
+#  'EQ': frozenset({(frozenset({'size', 'smoker', 'total_bill'}),
+#              frozenset({'day', 'smoker', 'total_bill'})),
+#             (frozenset({'day', 'tip', 'total_bill'}),
+#              frozenset({'smoker', 'tip', 'total_bill'}))}),
 #  'CK': frozenset({frozenset({'day', 'tip', 'total_bill'}),
 #             frozenset({'day', 'sex', 'smoker', 'total_bill'}),
-#             frozenset({'smoker', 'tip', 'total_bill'}),
-#             frozenset({'sex', 'size', 'smoker', 'total_bill'})})}
+#             frozenset({'sex', 'size', 'smoker', 'total_bill'}),
+#             frozenset({'smoker', 'tip', 'total_bill'})})}
 
 ```
 
