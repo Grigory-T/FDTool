@@ -1,9 +1,11 @@
 from .dbschema import dbschema
 from string import ascii_lowercase
+
 # This function
 # takes in well-formatted FDs
 # and passes them through certain
 # dbschemacmd functions to return keys
+
 
 def f(U, alphaString, FD_Store):
 
@@ -13,8 +15,8 @@ def f(U, alphaString, FD_Store):
     # Follow path given in dbschema to obtain keys with FDs
     dbschemaNotation = (alphaString, FD_Str)
     (attrastxt, abhastxt) = dbschemaNotation
-    (attrs,abhh) = dbschema.ScanAttrAbh(attrastxt, abhastxt)
-    abhh=dbschema.mincoverage(abhh)
+    (attrs, abhh) = dbschema.ScanAttrAbh(attrastxt, abhastxt)
+    abhh = dbschema.mincoverage(abhh)
     (primattr, keys) = dbschema.keysTreeAlg(attrs, abhh, 2)
     KeyList = map(dbschema.attr2str, keys)
 
@@ -22,13 +24,7 @@ def f(U, alphaString, FD_Store):
     Column_Dict = {ascii_lowercase.upper()[i]: U[i] for i in range(len(U))}
 
     # Reformat key list
-    KeyList = [str("{" + ", ".join([Column_Dict[char] for char in k]) + "}") for k in KeyList]
+    # KeyList = [str("{" + ", ".join([Column_Dict[char] for char in k]) + "}") for k in KeyList]
+    KeyList = frozenset(frozenset(Column_Dict[char] for char in k) for k in KeyList)
 
-    return KeyList;
-
-
-
-
-
-
-
+    return KeyList

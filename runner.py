@@ -26,7 +26,8 @@ def run_fdtool(df, max_time=30, max_k_level=15):
 
     # Retrieve the result if the process completed successfully
     if not result_queue.empty():
-        result = result_queue.get()
-        print(result)
+        result_str = result_queue.get()
+        result_tuple = result_queue.get()
+        return (result_str, result_tuple)
     else:
         print("No result returned (process may have been terminated).")
