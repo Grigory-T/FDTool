@@ -70,4 +70,4 @@ result = run_fdtool(df)  # result have two elements - [str, real_containers]
 
 ## License
 Notes:
-Module REPO/fdtool/modules/dbschema released under C-FSL license and copyright held by Elmar Stellnberger.
+Module REPO/fdtooldf/modules/dbschema released under C-FSL license and copyright held by Elmar Stellnberger.
