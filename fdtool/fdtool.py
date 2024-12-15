@@ -37,7 +37,10 @@ def main(result_queue=None, df=None, max_k_level=None):
     # df = pd.read_csv(r"C:\Users\trofi\dev\FDTool\data\input\Table1.csv")
     # df = pl.from_pandas(df)
 
-    rv = "Functional Dependencies: "  # stirng for accumulating all results
+    result_print = (
+        "FD (functional dependencies):"  # stirng for accumulating all results
+    )
+    result_FD = []
 
     # Define header; Initialize k;
     U = list(df.columns)
@@ -119,7 +122,10 @@ def main(result_queue=None, df=None, max_k_level=None):
                 + "}"
             )
             # Print FD String
-            rv += "\n" + String
+            result_print += "\n" + String
+            result_FD.append(
+                (frozenset(FunctionalDependency[0]), FunctionalDependency[1])
+            )
 
         # Break while loop if cardinality of C_k is 0
         if not len(C_k) > 0:
@@ -129,9 +135,10 @@ def main(result_queue=None, df=None, max_k_level=None):
             break
 
     # Print equivalences
-    rv += "\n\n" + "Equivalences: "
+    result_print += "\n\n" + "EQ (equivalences):"
 
     # Iterate through equivalences returned
+    result_EQ = []
     for Equivalence in E_Set:
         # Create string for functional dependency
         String = (
@@ -142,24 +149,31 @@ def main(result_queue=None, df=None, max_k_level=None):
             + "}"
         )
         # Print equivalence string
-        rv += "\n" + String
+        result_print += "\n" + String
+        result_EQ.append(
+            frozenset([frozenset(Equivalence[0]), frozenset(Equivalence[1])])
+        )
 
     # Print out keys
-    rv += "\n\n" + "Keys: " + "\n"
+    result_print += "\n\n" + "CK (candidate keys):" + "\n"
 
     # Get string of column names sorted to alphabetical characters
     SortedAlphaString = "".join(sorted([Alpha_Dict[item] for item in Alpha_Dict]))
     # Run required inputs through keyList module to determine keys with
     keyList = keyRun.f(U, SortedAlphaString, FD_Store)
     # Iterate through keys returned
+    result_CK = keyList
     for key in keyList:
         # Write keys to file
-        rv += str(key) + "\n"
+        result_print += str(key) + "\n"
 
     # Write info at bottom
-    rv += "\nNumber of FDs checked: " + str(GetFDs.CardOfPartition.calls)
+    result_print += "\nNumber of FDs checked: " + str(GetFDs.CardOfPartition.calls)
 
-    result_queue.put(rv)
+    result_queue.put(result_print)
+    result_queue.put(
+        {"FD": frozenset(result_FD), "EQ": frozenset(result_EQ), "CK": result_CK}
+    )
 
 
 ### DEBUG
