@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "fdtooldf"
+version = "0.0.0"
+description = "Mine for functional dependencies in dataframes with polars"
+authors = ["Grigory T"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+pandas = "*"
+polars = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

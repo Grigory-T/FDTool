@@ -1,6 +1,6 @@
 from multiprocessing import Process, Queue
-from .fdtool.fdtool import main
 import polars as pl
+from .fdtool import main
 
 
 def run_fdtool(df, max_time=30, max_k_level=15):
