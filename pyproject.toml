@@ -6,9 +6,9 @@ authors = ["Grigory T"]
 readme = "README.md"
 
 [tool.poetry.packages]
-include = [
-    { include = "fdtool", from = ".", format="all" }
-]
+- include = "fdtool"
+  from = "."
+  as = "fdtooldf"
 
 [tool.poetry.dependencies]
 python = "^3.8"
