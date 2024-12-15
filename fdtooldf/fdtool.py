@@ -168,9 +168,9 @@ def main(result_queue=None, df=None, max_k_level=None):
         result_print += str(key) + "\n"
 
     # Write info at bottom
-    result_print += "\nNumber of FDs checked: " + str(GetFDs.CardOfPartition.calls)
+    # result_print += "\nNumber of FDs checked: " + str(GetFDs.CardOfPartition.calls)
 
-    result_queue.put(result_print)
+    # result_queue.put(result_print)
     result_queue.put(
         {"FD": frozenset(result_FD), "EQ": frozenset(result_EQ), "CK": result_CK}
     )

@@ -1,6 +1,7 @@
 from multiprocessing import Process, Queue
 import polars as pl
 from .fdtool import main
+from .utils import convert_col_name_back, result_dict_to_str
 
 
 def run_fdtool(df, max_time=30, max_k_level=15):
@@ -10,6 +11,9 @@ def run_fdtool(df, max_time=30, max_k_level=15):
     if len(df.columns) != len(set(df.columns)):
         raise Exception("columns NOT unique")
     df = df.drop_duplicates().apply(lambda ser: ser.factorize()[0])
+    map_id_colname = {str(k): v for k, v in enumerate(df.columns)}
+    map_colname_id = {v: k for k, v in enumerate(df.columns)}
+    df.columns = [str(el) for el in range(len(df.columns))]
     df = pl.from_pandas(df)
 
     result_queue = Queue()
@@ -26,8 +30,8 @@ def run_fdtool(df, max_time=30, max_k_level=15):
 
     # Retrieve the result if the process completed successfully
     if not result_queue.empty():
-        result_str = result_queue.get()
-        result_tuple = result_queue.get()
-        return (result_str, result_tuple)
+        result_dict = convert_col_name_back(result_queue.get(), map_id_colname)
+        result_str = result_dict_to_str(result_dict, map_colname_id)
+        return (result_str, result_dict)
     else:
         print("No result returned (process may have been terminated).")
