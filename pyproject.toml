@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "fdtool-df"
+name = "fdtooldf"
 version = "0.0.0"
 description = "Mine for functional dependencies in dataframes with polars"
 authors = ["Grigory T"]
