@@ -1,10 +1,13 @@
-this is fork of https://github.com/kristian10007/FDTool which is fork of https://github.com/USEPA/FDTool
+# FDToolDF
+This is fork of https://github.com/kristian10007/FDTool which is fork of https://github.com/USEPA/FDTool
 
-for licence and additional info - see those repositories
+This fork introduces:
+- Functionality of using pandas and polars dataframes as inputs.
+- Better logging.
+- (Experiments planned) Multithreaded search optimization.
 
-my changes are clear from my commits
+## Usage
 
-how to use:
 ```python
 # in cli
 !pip install fdtooldf
@@ -64,3 +67,7 @@ result = run_fdtool(df)  # result have two elements - [str, real_containers]
 #             frozenset({'sex', 'size', 'smoker', 'total_bill'})})}
 
 ```
+
+## License
+Notes:
+Module REPO/fdtool/modules/dbschema released under C-FSL license and copyright held by Elmar Stellnberger.
