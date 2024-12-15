@@ -1,5 +1,5 @@
 from multiprocessing import Process, Queue
-from ..fdtool.fdtool import main
+from .fdtool import main
 import polars as pl
 
 
