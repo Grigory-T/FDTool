@@ -5,6 +5,11 @@ description = "Mine for functional dependencies in dataframes with polars"
 authors = ["Grigory T"]
 readme = "README.md"
 
+packages = [
+    { include = "fdtool" },
+    { include = "fdtool_df" }
+]
+
 [tool.poetry.dependencies]
 python = "^3.8"
 pandas = "*"
