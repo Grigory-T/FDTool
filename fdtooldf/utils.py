@@ -1,11 +1,12 @@
 def result_dict_to_str(d, m):
     s = ""
+    n = 10
 
     s += ">>> FD (functional dependancies):\n"
     l = []
     for vs, v in d["FD"]:
         ss = ""
-        ss += " ".join(sorted(vs, key=m.get))
+        ss += " | ".join(el[:n] for el in sorted(vs, key=m.get))
         ss += " -> "
         ss += str(v)
         l.append(ss)
@@ -14,15 +15,15 @@ def result_dict_to_str(d, m):
 
     s += ">>> EQ (equivalences):\n"
     for el in sorted(d["EQ"], key=lambda el: len(el[0]) + len(el[1])):
-        s += " ".join(sorted(el)[0])
+        s += " | ".join(el[:n] for el in sorted(el)[0])
         s += " <-> "
-        s += " ".join(sorted(el)[1])
+        s += " | ".join(el[:n] for el in sorted(el)[1])
         s += "\n"
     s += "\n"
 
     s += ">>> CK (candidate keys):\n"
     for el in sorted(d["CK"], key=lambda el: (len(el), sorted(el))):
-        s += " ".join(sorted(el))
+        s += " | ".join(el[:n] for el in sorted(el))
         s += "\n"
     s = s[:-1]
 
